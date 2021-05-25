@@ -1,50 +1,38 @@
 package project1;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-
-import javax.swing.Box;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 public class MyFrame extends JFrame{
 	BufferedReader br = new BufferedReader(new FileReader("word.txt"));
-	String[][][] SubjectWord = new String[6][][];
+	static Object[][][] SubjectWord = new Object[6][][];
 	JButton[] Subjects = new JButton[6];
 	int cntSubject=1,count;
-	int currentSubject;
+	static int currentSubject;
 	String tempSubjectName;
 	String line;
-	String[] columnNames = {"´Ü¾î","¶æ"};
+	Object[] columnNames = {"ë‹¨ì–´","ëœ»","ë‚ ì§œ"," "};
 	JTable[] wordTable = new JTable[6];
 	JScrollPane[] scroll_table = new JScrollPane[6];
-	int[] SubjectWordCnt= {0,0,0,0,0,0};
+	
+	static int[] SubjectWordCnt= {0,0,0,0,0,0};
 	MyFrame() throws IOException{
 		ImageIcon icon2 = new ImageIcon("noteIcon.png");
-		JButton startButton = new JButton("start");  	//Ã³À½ start ¹× µÚ·Î °¡´Â ¹öÆ°
-		JButton addSubjectButton = new JButton("+"); 	//ÁÖÁ¦ Ãß°¡ ¹öÆ°
-		JButton testButton = new JButton("test");    	//ÇØ´ç °ú¸ñ¿¡ ÀÖ´Â °Íµé Å×½ºÆ® ¹öÆ°
-		JButton deleteCurSubject = new JButton("del");	//ÇØ´ç ÁÖÁ¦ »èÁ¦ ¹öÆ°
-		JButton addWord = new JButton("add");         	//ÇØ´ç ÁÖÁ¦ Å×ÀÌºí¿¡ »õ·Î¿î ´Ü¾î Ãß°¡ ¹öÆ°
-		JTextField subjectText = new JTextField();      //ÁÖÁ¦ Ãß°¡ÇÒ ¶§ ¾²´Â ÅØ½ºÆ®ÇÊµå 
-		//SubjectWord¶ó´Â °¢ ÁÖÁ¦ º° ´Ü¾î ÀúÀå¿ë ¹è¿­ »ı¼º
-		SubjectWord[0]=new String[500][2];
+		JButton startButton = new JButton("start");  	//ì²˜ìŒ start ë° ë’¤ë¡œ ê°€ëŠ” ë²„íŠ¼
+		JButton addSubjectButton = new JButton("+"); 	//ì£¼ì œ ì¶”ê°€ ë²„íŠ¼
+		JButton testButton = new JButton("test");    	//í•´ë‹¹ ê³¼ëª©ì— ìˆëŠ” ê²ƒë“¤ í…ŒìŠ¤íŠ¸ ë²„íŠ¼
+		JButton deleteCurSubject = new JButton("del");	//í•´ë‹¹ ì£¼ì œ ì‚­ì œ ë²„íŠ¼
+		JButton addWord = new JButton("add");         	//í•´ë‹¹ ì£¼ì œ í…Œì´ë¸”ì— ìƒˆë¡œìš´ ë‹¨ì–´ ì¶”ê°€ ë²„íŠ¼
+		JCheckBox selectAll = new JCheckBox(); 
+		JTextField subjectText = new JTextField();      //ì£¼ì œ ì¶”ê°€í•  ë•Œ ì“°ëŠ” í…ìŠ¤íŠ¸í•„ë“œ
+		
+		//SubjectWordë¼ëŠ” ê° ì£¼ì œ ë³„ ë‹¨ì–´ ì €ì¥ìš© ë°°ì—´ ìƒì„±
+		SubjectWord[0]=new Object[500][4];
 		for(int i=1;i<6;i++) 
-			SubjectWord[i]=new String[100][2];
-		//Subjects¶ó´Â °¢ ÁÖÁ¦ º° ¸ŞÀÎ È­¸é¿¡¼­ Å¬¸¯ÇÒ ¹öÆ° »ı¼º
+			SubjectWord[i]=new Object[100][4];
+		//Subjectsë¼ëŠ” ê° ì£¼ì œ ë³„ ë©”ì¸ í™”ë©´ì—ì„œ í´ë¦­í•  ë²„íŠ¼ ìƒì„±
 		for(int i=0;i<6;i++) {
 			Subjects[i] = new JButton();
 			Subjects[i].setVisible(false);
@@ -52,19 +40,39 @@ public class MyFrame extends JFrame{
 			Subjects[i].setBounds(50+350*((i)%2),100+(i)/2*150,200,100);
 			this.add(Subjects[i]);
 		}
-		//Subjects ´­·¶À» ¶§ º¸¿©Áö´Â ½ºÅ©·Ñ °¡´ÉÇÑ Å×ÀÌºí »ı¼º
+		//Subjects ëˆŒë €ì„ ë•Œ ë³´ì—¬ì§€ëŠ” ìŠ¤í¬ë¡¤ ê°€ëŠ¥í•œ í…Œì´ë¸” ìƒì„±
 		for(int i=0;i<6;i++) {
-			wordTable[i] = new JTable(SubjectWord[i],columnNames);
-			wordTable[i].setEnabled(false);
+			wordTable[i] = new JTable(SubjectWord[i],columnNames) {
+				@Override
+				public Class getColumnClass(int column) {
+	                switch (column) {
+	                    case 0:
+	                        return String.class;
+	                    case 1:
+	                        return String.class;
+	                    case 2:
+	                        return Integer.class;
+	                    default:
+	                        return Boolean.class;
+	                }
+	            }
+				@Override
+				public boolean isCellEditable(int row, int col) {
+					if(SubjectWordCnt[currentSubject]>row) {
+						return col==3;
+					}
+			        return col==4;
+			    }
+			};
 			scroll_table[i] = new JScrollPane(wordTable[i]);
 		    scroll_table[i].setVisible(false);
 		    scroll_table[i].setBounds(100,100,400,400);
 	        this.add(scroll_table[i]);
 		}
 		
-		//¹öÆÛ ¸®´õ·Î ±âÁ¸¿¡ ÀÖ´Â °ª ºÒ·¯¿Í¼­ ¹è¿­¿¡ ³Ö¾îÁÖ±â
+		//ë²„í¼ ë¦¬ë”ë¡œ ê¸°ì¡´ì— ìˆëŠ” ê°’ ë¶ˆëŸ¬ì™€ì„œ ë°°ì—´ì— ë„£ì–´ì£¼ê¸°
 		int wordcnt=0;
-		int subjectcnt=1;
+		int subjectcnt=0;
 		line = br.readLine();
 		count = Integer.parseInt(line);
 		cntSubject=count;
@@ -78,13 +86,12 @@ public class MyFrame extends JFrame{
 		 	for(int i=0;i<count;i++) {
 	            line = br.readLine();
 	            String[] wordline = line.split(" ");
-		 		SubjectWord[0][wordcnt][0]=wordline[0];
-	            SubjectWord[0][wordcnt++][1]=wordline[1];
 	            SubjectWord[subjectcnt][i][0]=wordline[0];
 	            SubjectWord[subjectcnt][i][1]=wordline[1];
+	            SubjectWord[subjectcnt][i][2]=wordline[2];
+	            SubjectWord[subjectcnt][i][3]=Boolean.FALSE;
 		 	}
 			SubjectWordCnt[subjectcnt]+=count;
-			SubjectWordCnt[0]+=count;
 		 	subjectcnt++;
         }
 		
@@ -95,6 +102,10 @@ public class MyFrame extends JFrame{
 		testButton.setFont(new Font("Comic Sans", Font.BOLD, 30));
 		testButton.setVisible(false);
 		testButton.setBounds(50,20,100,50);
+		
+		selectAll.setVisible(false);
+		selectAll.setBounds(520,100,14,14);
+		selectAll.setMargin(new Insets(-2, -1, 0, 0));
 		
 		deleteCurSubject.setFont(new Font("Comic Sans", Font.BOLD, 30));
 		deleteCurSubject.setVisible(false);
@@ -113,7 +124,17 @@ public class MyFrame extends JFrame{
 		startButton.setVerticalTextPosition(JButton.BOTTOM);
 		startButton.setFont(new Font("Comic Sans", Font.BOLD, 30));
 		
-		//»õ·Î¿î ÁÖÁ¦ Ãß°¡ÇÏ±â ¹öÆ°
+		testButton.addActionListener(e -> {
+			test testFrame;
+			try {
+				testFrame = new test();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		});
+		
+		//ìƒˆë¡œìš´ ì£¼ì œ ì¶”ê°€í•˜ê¸° ë²„íŠ¼
 		addSubjectButton.addActionListener(e -> {
 			addSubjectButton.setVisible(false);
 			for(int i=0;i<cntSubject;i++) 
@@ -122,27 +143,39 @@ public class MyFrame extends JFrame{
 				Subjects[cntSubject].setVisible(false);
 				subjectText.setBounds(50+350*((cntSubject)%2),100+(cntSubject)/2*150,200,100);
 				subjectText.setVisible(true);
-				cntSubject++;
-				if(cntSubject==6) //5°³°¡ ´Ù Â÷¸é ´õ ÀÌ»ó Ãß°¡ ¸øÇÏ°Ô ¸·À½
+				if(cntSubject==6) //5ê°œê°€ ë‹¤ ì°¨ë©´ ë” ì´ìƒ ì¶”ê°€ ëª»í•˜ê²Œ ë§‰ìŒ
 					addSubjectButton.setVisible(false);
 			}
 		});
-		//°¢ ÁÖÁ¦ÀÎ Subjects[i]°¡ ´­·ÈÀ» ¶§ 
+		//ê° ì£¼ì œì¸ Subjects[i]ê°€ ëˆŒë ¸ì„ ë•Œ 
 		for(int i=0;i<6;i++) {
 			int k=i;
 			Subjects[i].addActionListener(e -> {
 				currentSubject=k;
 				startButton.setVisible(true);
 				testButton.setVisible(true);
-				deleteCurSubject.setVisible(true);
-				addWord.setVisible(true);
+				if(k!=0) deleteCurSubject.setVisible(true);
+				if(k!=0) addWord.setVisible(true);
 				scroll_table[currentSubject].setVisible(true);
 				for(int j=0;j<6;j++) 
 					Subjects[j].setVisible(false);
 				addSubjectButton.setVisible(false);
+				selectAll.setVisible(true);
 			});
 		}
-		//ÇöÀç ÁÖÁ¦ ÀüÃ¼ »èÁ¦ÇÏ±â
+		//ë‹¨ì–´ ì „ì²´ ì„ íƒ ì²´í¬ë°•ìŠ¤
+		selectAll.addActionListener(e -> {
+			for(int i=0;i<SubjectWordCnt[currentSubject];i++) {
+				if(selectAll.isSelected())
+					SubjectWord[currentSubject][i][3]=true;
+				else
+					SubjectWord[currentSubject][i][3]=false;
+			}
+			scroll_table[currentSubject].setVisible(false);
+			scroll_table[currentSubject].setVisible(true);
+			
+		});
+		//í˜„ì¬ ì£¼ì œ ì „ì²´ ì‚­ì œí•˜ê¸°
 		deleteCurSubject.addActionListener(e -> {
 			int a=JOptionPane.showConfirmDialog(this,"Delete this Subject?"); 
 			if(a==JOptionPane.YES_OPTION){  
@@ -164,6 +197,7 @@ public class MyFrame extends JFrame{
 				testButton.setVisible(false);
 				deleteCurSubject.setVisible(false);
 				addWord.setVisible(false);
+				selectAll.setVisible(false);
 				cntSubject-=1;
 				for(int i=0;i<cntSubject;i++) {
 					scroll_table[i].setVisible(false);
@@ -176,7 +210,8 @@ public class MyFrame extends JFrame{
 					addSubjectButton.setVisible(true);
 			}
 		});
-		//¸ŞÀÎÈ­¸éÀ¸·Î °¡±â
+		
+		//ë©”ì¸í™”ë©´ìœ¼ë¡œ ê°€ê¸°
 		startButton.addActionListener(e -> {
 			startButton.setBounds(410,20,180,50);
 			startButton.setText("<-");
@@ -184,6 +219,8 @@ public class MyFrame extends JFrame{
 			testButton.setVisible(false);
 			deleteCurSubject.setVisible(false);
 			addWord.setVisible(false);
+			selectAll.setVisible(false);
+			selectAll.setSelected(false);
 			for(int i=0;i<cntSubject;i++) {
 				scroll_table[i].setVisible(false);
 				Subjects[i].setVisible(true);
@@ -192,7 +229,8 @@ public class MyFrame extends JFrame{
 				addSubjectButton.setVisible(true);
 		});
 		
-		// ´Ü¾î Ãß°¡ ¹öÆ° ¸¸µé±â
+		
+		// ë‹¨ì–´ ì¶”ê°€ ë²„íŠ¼ ë§Œë“¤ê¸°
 		addWord.addActionListener(e -> {
 		  JTextField WordField = new JTextField(10);
 	      JTextField MeanField = new JTextField(10);
@@ -209,22 +247,27 @@ public class MyFrame extends JFrame{
 	        String Word = WordField.getText();
 			String Mean = MeanField.getText();
 			SubjectWord[currentSubject][SubjectWordCnt[currentSubject]][0]=Word;
-			SubjectWord[currentSubject][SubjectWordCnt[currentSubject]++][1]=Mean;
+			SubjectWord[currentSubject][SubjectWordCnt[currentSubject]][1]=Mean;
+			SubjectWord[currentSubject][SubjectWordCnt[currentSubject]][2]=SubjectWordCnt[currentSubject];
+			SubjectWord[currentSubject][SubjectWordCnt[currentSubject]++][3]=Boolean.FALSE;
 			SubjectWord[0][SubjectWordCnt[0]][0]=Word;
-			SubjectWord[0][SubjectWordCnt[0]++][1]=Mean;
+			SubjectWord[0][SubjectWordCnt[0]][1]=Mean;
+			SubjectWord[0][SubjectWordCnt[0]][2]=SubjectWordCnt[0];
+			SubjectWord[0][SubjectWordCnt[0]++][3]=Boolean.FALSE;
 			scroll_table[currentSubject].setVisible(false);
 			scroll_table[currentSubject].setVisible(true);
 	      }
 		});
 		
-        //TextField¿¡ Ãß°¡ ÇÒ ÁÖÁ¦ÀÇ ÀÌ¸§À» ÀÔ·Â¹Ş¾ÒÀ» ¶§, ±× ÀÌ¸§À» °¡Áø ÁÖÁ¦ ¹öÆ° ¸¸µé±â
+        //TextFieldì— ì¶”ê°€ í•  ì£¼ì œì˜ ì´ë¦„ì„ ì…ë ¥ë°›ì•˜ì„ ë•Œ, ê·¸ ì´ë¦„ì„ ê°€ì§„ ì£¼ì œ ë²„íŠ¼ ë§Œë“¤ê¸°
 		subjectText.addActionListener(new ActionListener() {
 		    @Override
 		    public void actionPerformed(ActionEvent e) {
 		    	if(subjectText.getText().equals("")) {
-		    		cntSubject--;
+		    		;
 		    	}
 		    	else {
+		    		cntSubject++;
 		    		tempSubjectName=subjectText.getText();
 			    	Subjects[cntSubject-1].setVisible(true);
 			    	Subjects[cntSubject-1].setText(tempSubjectName);
@@ -254,9 +297,10 @@ public class MyFrame extends JFrame{
         this.add(subjectText);
         this.add(testButton);
         this.add(addWord);
+        this.add(selectAll);
         
         br.close();
-        
+        // ì°½ ë‹«ì„ ë•Œ ë°°ì—´ ì•ˆì— ìˆëŠ” ê°’ë“¤ì„ text íŒŒì¼ì— ì €ì¥
         this.addWindowListener(new java.awt.event.WindowAdapter() {
 	        @Override
 			public void windowClosing(java.awt.event.WindowEvent windowEvent){
@@ -275,10 +319,11 @@ public class MyFrame extends JFrame{
 		for(int i=1;i<cntSubject;i++) {
 		 	fw.write(Subjects[i].getText()+"\n");
 		}
-		for(int i=1;i<cntSubject;i++) {
+		for(int i=0;i<cntSubject;i++) {
+			System.out.println(SubjectWordCnt[i]+"\n");
 			fw.write(SubjectWordCnt[i]+"\n");
 			for(int j=0;j<SubjectWordCnt[i];j++) {
-				fw.write(SubjectWord[i][j][0]+" "+SubjectWord[i][j][1]+"\n");
+				fw.write(SubjectWord[i][j][0]+" "+SubjectWord[i][j][1]+" "+SubjectWord[i][j][2]+ "\n");
 			}
 		}
 		fw.close();
