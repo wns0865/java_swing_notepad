@@ -64,17 +64,17 @@ public class MyFrame extends JFrame{
 			wordTable[i] = new JTable(SubjectWord[i],columnNames) {
 				@Override
 				public Class getColumnClass(int column) {
-	                switch (column) {
-		                case 0:
-		                	return Icon.class;
-	                    case 1:
-	                        return String.class;
-	                    case 2:
-	                        return String.class;
-	                    default:
-	                        return Boolean.class;
-	                }
-	            }
+				switch (column) {
+					case 0:
+						return Icon.class;
+					case 1:
+						return String.class;
+					case 2:
+						return String.class;
+					default:
+						return Boolean.class;
+				}
+		    	}
 				@Override
 				public boolean isCellEditable(int row, int col) {
 					if(SubjectWordCnt[currentSubject]>row) {
@@ -89,13 +89,15 @@ public class MyFrame extends JFrame{
 			    public void mouseClicked(java.awt.event.MouseEvent evt) {
 			        int row = wordTable[k].rowAtPoint(evt.getPoint());
 			        int col = wordTable[k].columnAtPoint(evt.getPoint());
-			        if (col == 0 && SubjectWord[k][row][0]==Boolean.FALSE) {
-			        	SubjectWord[k][row][0]="star.jpg";
-						wordTable[k].setValueAt(iconStar, row, 0);
-			        }
-			        else {
-			        	SubjectWord[k][row][0]=Boolean.FALSE;
-						wordTable[k].setValueAt(Boolean.FALSE, row, 0);
+			        if (row<SubjectWordCnt[k]) {
+				        if (col == 0 && SubjectWord[k][row][0]==Boolean.FALSE) {
+				        	SubjectWord[k][row][0]="star.jpg";
+							wordTable[k].setValueAt(iconStar, row, 0);
+				        }
+				        else {
+				        	SubjectWord[k][row][0]=Boolean.FALSE;
+							wordTable[k].setValueAt(Boolean.FALSE, row, 0);
+				        }
 			        }
 			    }
 			});
@@ -118,24 +120,24 @@ public class MyFrame extends JFrame{
 		for(int i=0;i<count;i++) 
 			Subjects[i].setText(br.readLine());
 		while(true) {
-		 	line = br.readLine();
-            if (line==null) break;
-            count = Integer.parseInt(line);
-		 	for(int i=0;i<count;i++) {
-	            line = br.readLine();
-	            String[] wordline = line.split(" ");
-	            if(wordline[0].equals("star.jpg")) {
-	            	SubjectWord[subjectcnt][i][0]="star.jpg";
-	            	wordTable[subjectcnt].setValueAt(iconStar, i, 0);
-	            }
-	            else SubjectWord[subjectcnt][i][0]=Boolean.FALSE;
-	            SubjectWord[subjectcnt][i][1]=wordline[1];
-	            SubjectWord[subjectcnt][i][2]=wordline[2];
-	            SubjectWord[subjectcnt][i][3]=Boolean.FALSE;
+			line = br.readLine();
+			if (line==null) break;
+			count = Integer.parseInt(line);
+			for(int i=0;i<count;i++) {
+			line = br.readLine();
+			String[] wordline = line.split(" ");
+			if(wordline[0].equals("star.jpg")) {
+				SubjectWord[subjectcnt][i][0]="star.jpg";
+				wordTable[subjectcnt].setValueAt(iconStar, i, 0);
+			}
+	            	else SubjectWord[subjectcnt][i][0]=Boolean.FALSE;
+			    	SubjectWord[subjectcnt][i][1]=wordline[1];
+			    	SubjectWord[subjectcnt][i][2]=wordline[2];
+			    	SubjectWord[subjectcnt][i][3]=Boolean.FALSE;
 		 	}
 			SubjectWordCnt[subjectcnt]+=count;
 		 	subjectcnt++;
-        }
+        	}
 		
 		
 		subjectText.setVisible(false);
