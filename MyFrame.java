@@ -3,6 +3,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 
 import com.google.cloud.texttospeech.v1.*;
@@ -24,23 +26,24 @@ public class MyFrame extends JFrame{
 	
 	static int[] SubjectWordCnt= {0,0,0,0,0,0};
 	
-	VoiceSelectionParams voice =VoiceSelectionParams.newBuilder().setLanguageCode("en-US")
-			.setSsmlGender(SsmlVoiceGender.NEUTRAL).build();
-	AudioConfig audioConfig =AudioConfig.newBuilder().setAudioEncoding(AudioEncoding.MP3).build();
+
 	MyFrame() throws IOException{
 		ImageIcon icon2 = new ImageIcon("noteIcon.png");
 		ImageIcon iconX = new ImageIcon("x.png");
 		ImageIcon iconNote = new ImageIcon("img.png");
 		ImageIcon iconStar = new ImageIcon("star.jpg");
-		JButton startButton = new JButton("start");  	//처음 start 및 뒤로 가는 버튼
+		JButton startButton = new JButton("시작");  	//처음 start 및 뒤로 가는 버튼
 		JButton addSubjectButton = new JButton("+"); 	//주제 추가 버튼
-		JButton testButton = new JButton("test");    	//해당 과목에 있는 것들 테스트 버튼
-		JButton deleteSelectedWords = new JButton("del");	//해당 주제 삭제 버튼
-		JButton addWord = new JButton("add");         	//해당 주제 테이블에 새로운 단어 추가 버튼
+		JButton testButton = new JButton("시험");    	//해당 과목에 있는 것들 테스트 버튼
+		JButton deleteSelectedWords = new JButton("삭제");	//해당 주제 삭제 버튼
+		JButton addWord = new JButton("추가");         	//해당 주제 테이블에 새로운 단어 추가 버튼
 		JCheckBox selectAll = new JCheckBox(); 
+		JCheckBox selectImportant = new JCheckBox(); 
 		JTextField subjectText = new JTextField();      //주제 추가할 때 쓰는 텍스트필드
 		JPanel selectBox= new JPanel();
+		JPanel selectBox1= new JPanel();
 		JLabel selectYN=new JLabel();
+		JLabel selectYN1=new JLabel();
 		//SubjectWord라는 각 주제 별 단어 저장용 배열 생성
 		for(int i=0;i<6;i++) 
 			SubjectWord[i]=new Object[100][4];
@@ -64,17 +67,17 @@ public class MyFrame extends JFrame{
 			wordTable[i] = new JTable(SubjectWord[i],columnNames) {
 				@Override
 				public Class getColumnClass(int column) {
-				switch (column) {
-					case 0:
-						return Icon.class;
-					case 1:
-						return String.class;
-					case 2:
-						return String.class;
-					default:
-						return Boolean.class;
-				}
-		    	}
+	                switch (column) {
+		                case 0:
+		                	return Icon.class;
+	                    case 1:
+	                        return String.class;
+	                    case 2:
+	                        return String.class;
+	                    default:
+	                        return Boolean.class;
+	                }
+	            }
 				@Override
 				public boolean isCellEditable(int row, int col) {
 					if(SubjectWordCnt[currentSubject]>row) {
@@ -94,7 +97,7 @@ public class MyFrame extends JFrame{
 				        	SubjectWord[k][row][0]="star.jpg";
 							wordTable[k].setValueAt(iconStar, row, 0);
 				        }
-				        else {
+				        else if(col == 0) {
 				        	SubjectWord[k][row][0]=Boolean.FALSE;
 							wordTable[k].setValueAt(Boolean.FALSE, row, 0);
 				        }
@@ -120,24 +123,24 @@ public class MyFrame extends JFrame{
 		for(int i=0;i<count;i++) 
 			Subjects[i].setText(br.readLine());
 		while(true) {
-			line = br.readLine();
-			if (line==null) break;
-			count = Integer.parseInt(line);
-			for(int i=0;i<count;i++) {
-			line = br.readLine();
-			String[] wordline = line.split(" ");
-			if(wordline[0].equals("star.jpg")) {
-				SubjectWord[subjectcnt][i][0]="star.jpg";
-				wordTable[subjectcnt].setValueAt(iconStar, i, 0);
-			}
-	            	else SubjectWord[subjectcnt][i][0]=Boolean.FALSE;
-			    	SubjectWord[subjectcnt][i][1]=wordline[1];
-			    	SubjectWord[subjectcnt][i][2]=wordline[2];
-			    	SubjectWord[subjectcnt][i][3]=Boolean.FALSE;
+		 	line = br.readLine();
+            if (line==null) break;
+            count = Integer.parseInt(line);
+		 	for(int i=0;i<count;i++) {
+	            line = br.readLine();
+	            String[] wordline = line.split(" ");
+	            if(wordline[0].equals("star.jpg")) {
+	            	SubjectWord[subjectcnt][i][0]="star.jpg";
+	            	wordTable[subjectcnt].setValueAt(iconStar, i, 0);
+	            }
+	            else SubjectWord[subjectcnt][i][0]=Boolean.FALSE;
+	            SubjectWord[subjectcnt][i][1]=wordline[1];
+	            SubjectWord[subjectcnt][i][2]=wordline[2];
+	            SubjectWord[subjectcnt][i][3]=Boolean.FALSE;
 		 	}
 			SubjectWordCnt[subjectcnt]+=count;
 		 	subjectcnt++;
-        	}
+        }
 		
 		
 		subjectText.setVisible(false);
@@ -155,6 +158,15 @@ public class MyFrame extends JFrame{
 		selectBox.setBackground(new Color(wordColor[0]));
 		selectBox.setBounds(388,80,94,20);
 		selectBox.setBorder(BorderFactory.createEmptyBorder(-5, 0, 0, 0));
+		
+		selectImportant.setHorizontalAlignment(JCheckBox.LEFT);
+		selectYN1.setText("All/None");
+		selectBox1.add(selectYN1);
+		selectBox1.add(selectImportant);
+		selectBox1.setVisible(false);
+		//selectBox1.setBackground(new Color(wordColor[0]));
+		selectBox1.setBounds(102,80,94,20);
+		selectBox1.setBorder(BorderFactory.createEmptyBorder(-5, 0, 0, 0));
 		
 		deleteSelectedWords.setFont(new Font("Comic Sans", Font.BOLD, 30));
 		deleteSelectedWords.setVisible(false);
@@ -175,6 +187,7 @@ public class MyFrame extends JFrame{
 		startButton.setFont(new Font("Comic Sans", Font.BOLD, 30));
 		startButton.setBackground(new Color(0x14A989));
 		
+		// 테스트 버튼
 		testButton.addActionListener(e -> {
 			for(int i=0;i<SubjectWordCnt[currentSubject];i++) {
 				if((Boolean)SubjectWord[currentSubject][i][3]==true) {
@@ -182,6 +195,12 @@ public class MyFrame extends JFrame{
 					try {
 						testFrame = new test();
 					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (LineUnavailableException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (UnsupportedAudioFileException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
@@ -214,13 +233,7 @@ public class MyFrame extends JFrame{
 			int k=i;
 			Subjects[i].addActionListener(e -> { //각 주제인 Subjects[i]가 눌렸을 때 
 				currentSubject=k;
-				/*try {
-					System.out.println(SubjectWord[currentSubject][0][0]);
-					tts((String) SubjectWord[currentSubject][0][0]);
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}*/
+				
 				startButton.setVisible(true);
 				testButton.setVisible(true);
 				deleteSelectedWords.setVisible(true);
@@ -232,6 +245,7 @@ public class MyFrame extends JFrame{
 				}
 				addSubjectButton.setVisible(false);
 				selectBox.setVisible(true);
+				selectBox1.setVisible(true);
 			});
 			deleteSubjects[i].addActionListener(e -> { //옆에 있는 조그마한 꼽표로 해당 주제를 다 지울 때
 				currentSubject=k;
@@ -260,6 +274,22 @@ public class MyFrame extends JFrame{
 					SubjectWord[currentSubject][i][3]=true;
 				else
 					SubjectWord[currentSubject][i][3]=false;
+			}
+			scroll_table[currentSubject].setVisible(false);
+			scroll_table[currentSubject].setVisible(true);
+			
+		});
+		//중요도 단어 전체 선택 체크박스
+		selectImportant.addActionListener(e -> {
+			for(int i=0;i<SubjectWordCnt[currentSubject];i++) {
+				if(selectImportant.isSelected()) {
+					if(!(boolean)SubjectWord[currentSubject][i][0].equals(false)) {
+						SubjectWord[currentSubject][i][3]=true;
+					}
+				}
+				else
+					if(!(boolean)SubjectWord[currentSubject][i][0].equals(false)) 
+						SubjectWord[currentSubject][i][3]=false;
 			}
 			scroll_table[currentSubject].setVisible(false);
 			scroll_table[currentSubject].setVisible(true);
@@ -296,6 +326,7 @@ public class MyFrame extends JFrame{
 			deleteSelectedWords.setVisible(false);
 			addWord.setVisible(false);
 			selectBox.setVisible(false);
+			selectBox1.setVisible(false);
 			selectAll.setSelected(false);
 			for(int i=0;i<cntSubject;i++) {
 				scroll_table[i].setVisible(false);
@@ -382,7 +413,7 @@ public class MyFrame extends JFrame{
         this.add(testButton);
         this.add(addWord);
         this.add(selectBox);
-        
+        this.add(selectBox1);
         
         br.close();
         // 창 닫을 때 배열 안에 있는 값들을 text 파일에 저장
@@ -412,16 +443,5 @@ public class MyFrame extends JFrame{
 		}
 		fw.close();
     }
-	void tts(String subjectWord)throws Exception {
-		try (TextToSpeechClient textToSpeechClient = TextToSpeechClient.create()) {
-			SynthesisInput input = SynthesisInput.newBuilder().setText(subjectWord).build();
-			
-			SynthesizeSpeechResponse response =textToSpeechClient.synthesizeSpeech(input, voice, audioConfig);
-			ByteString audioContents = response.getAudioContent();
-			try (OutputStream out = new FileOutputStream("output.mp3")) {
-				out.write(audioContents.toByteArray());
-				System.out.println("WOW");
-			}
-		}
-	}
+	
 }
