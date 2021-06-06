@@ -2,16 +2,20 @@
 dfk
 sadf
 sfd
-5
-false adf df
-star.jpg adf df
-star.jpg asdf df
-false hi hiiiiii
-false bye byyeeeeee
+9
+star.jpg adf 에이디에프
+star.jpg adf 디에프
+star.jpg asdf 와우
+star.jpg hi 안녕
+star.jpg bye 잘가
+false haha 하하
+false English English
+false Korean 한국어
+false hello 안녕
 2
-false adf df
-star.jpg wer er
+false adf 에이디에프
+star.jpg wer 더브유이알
 3
-false asdf asdf
-false fff ff
-false asdfwe dfdf
+false boy 소년
+false girl 소녀
+false man 남자

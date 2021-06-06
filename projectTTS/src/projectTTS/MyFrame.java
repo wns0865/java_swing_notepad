@@ -2,15 +2,33 @@ package projectTTS;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.ArrayList;
 
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.TargetDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.sound.sampled.DataLine.Info;
 import javax.swing.*;
 
+import com.google.api.gax.rpc.ClientStream;
+import com.google.api.gax.rpc.ResponseObserver;
+import com.google.api.gax.rpc.StreamController;
+import com.google.cloud.speech.v1.RecognitionConfig;
+import com.google.cloud.speech.v1.SpeechClient;
+import com.google.cloud.speech.v1.SpeechRecognitionAlternative;
+import com.google.cloud.speech.v1.StreamingRecognitionConfig;
+import com.google.cloud.speech.v1.StreamingRecognitionResult;
+import com.google.cloud.speech.v1.StreamingRecognizeRequest;
+import com.google.cloud.speech.v1.StreamingRecognizeResponse;
 import com.google.cloud.texttospeech.v1.*;
 import com.google.protobuf.ByteString;
 
 public class MyFrame extends JFrame{
+	static String str;
 	BufferedReader br = new BufferedReader(new FileReader("word.txt"));
 	static Object[][][] SubjectWord = new Object[6][][];
 	JButton[] Subjects = new JButton[6];
@@ -20,6 +38,7 @@ public class MyFrame extends JFrame{
 	String tempSubjectName;
 	String line;
 	Object[] columnNames = {"중요도","단어","뜻","선택"};
+	Object[] voice = {"확인","취소","음성인식"};
 	JTable[] wordTable = new JTable[6];
 	static int[] wordColor= {0xFFFF66,0xCCFF00,0x50BFE6,0xFD5B78,0xFF6EFF,0xAF6E4D};
 	JScrollPane[] scroll_table = new JScrollPane[6];
@@ -340,31 +359,69 @@ public class MyFrame extends JFrame{
 		
 		// 단어 추가 버튼 만들기
 		addWord.addActionListener(e -> {
-		  JTextField WordField = new JTextField(10);
-	      JTextField MeanField = new JTextField(10);
+			JTextField WordField = new JTextField(10);
+			JTextField MeanField = new JTextField(10);
 
-	      JPanel myPanel = new JPanel();
-	      myPanel.add(new JLabel("단어:"));
-	      myPanel.add(WordField);
-	      myPanel.add(Box.createHorizontalStrut(20));
-	      myPanel.add(new JLabel("뜻:"));
-	      myPanel.add(MeanField);
-	      
-	      int result = JOptionPane.showConfirmDialog(null, myPanel, "입력할 단어와 뜻 입력", JOptionPane.OK_CANCEL_OPTION);
-	      if (result == JOptionPane.OK_OPTION) {
-	        String Word = WordField.getText();
-			String Mean = MeanField.getText();
-			if(Word.equals("") || Mean.equals(""))
-				JOptionPane.showMessageDialog(this,"제대로 입력해 주세요."); 
-			else {
-				SubjectWord[currentSubject][SubjectWordCnt[currentSubject]][0]=Boolean.FALSE;
-				SubjectWord[currentSubject][SubjectWordCnt[currentSubject]][1]=Word;
-				SubjectWord[currentSubject][SubjectWordCnt[currentSubject]][2]=Mean;
+			JPanel myPanel = new JPanel();
+			myPanel.add(new JLabel("단어:"));
+			myPanel.add(WordField);
+			myPanel.add(Box.createHorizontalStrut(20));
+			myPanel.add(new JLabel("뜻:"));
+			myPanel.add(MeanField);
+			int result = JOptionPane.showOptionDialog(null, myPanel, "입력할 단어와 뜻 입력", JOptionPane.OK_CANCEL_OPTION,JOptionPane.PLAIN_MESSAGE, iconStar, voice, null);
+  
+			if (result == JOptionPane.OK_OPTION) {
+				String Word = WordField.getText();
+				String Mean = MeanField.getText();
+				if(Word.equals("") || Mean.equals(""))
+					JOptionPane.showMessageDialog(this,"제대로 입력해 주세요."); 
+				else {
+					SubjectWord[currentSubject][SubjectWordCnt[currentSubject]][0]=Boolean.FALSE;
+					SubjectWord[currentSubject][SubjectWordCnt[currentSubject]][1]=Word;
+					SubjectWord[currentSubject][SubjectWordCnt[currentSubject]][2]=Mean;
+					SubjectWord[currentSubject][SubjectWordCnt[currentSubject]++][3]=Boolean.FALSE;
+					scroll_table[currentSubject].setVisible(false);
+					scroll_table[currentSubject].setVisible(true);
+				}
+			}
+		  	if (result == 2) { // 음성인식이 골라졌을 때
+		  		SubjectWord[currentSubject][SubjectWordCnt[currentSubject]][0]=Boolean.FALSE;
+		  		str=null;
+		  		String tmp1=null;
+		  		String tmp2=null;
+		  		int tmp3=-1;
+		  		JOptionPane.showMessageDialog(myPanel, "OK를 눌러 단어 음성인식 시작", null, 1);
+				try {
+					while(str==null) {
+						streamingMicRecognize(0);
+						if(str==null) tmp3= JOptionPane.showConfirmDialog(this, "제대로 인식이 안됐습니다. 다시 하시겠습니까?"); 
+						else tmp3=0;
+						if(tmp3!=0) return;
+					}
+					tmp1=str;
+				} catch (Exception e1) {
+				    e1.printStackTrace();
+				}
+				str=null;
+				JOptionPane.showMessageDialog(myPanel, "OK를 눌러 뜻(한국어) 음성인식 시작", null, 1);
+				try {
+					while(str==null) {
+						streamingMicRecognize(1);
+						if(str==null) tmp3= JOptionPane.showConfirmDialog(this, "제대로 인식이 안됐습니다. 다시 하시겠습니까?"); 
+						else tmp3=0;
+						if(tmp3!=0) return;
+					}
+					tmp2=str;
+				} catch (Exception e1) {
+				    e1.printStackTrace();
+				}
+		  		SubjectWord[currentSubject][SubjectWordCnt[currentSubject]][0]=Boolean.FALSE;
+				SubjectWord[currentSubject][SubjectWordCnt[currentSubject]][1]=tmp1;
+				SubjectWord[currentSubject][SubjectWordCnt[currentSubject]][2]=tmp2;
 				SubjectWord[currentSubject][SubjectWordCnt[currentSubject]++][3]=Boolean.FALSE;
 				scroll_table[currentSubject].setVisible(false);
 				scroll_table[currentSubject].setVisible(true);
 			}
-	      }
 		});
 		
         //TextField에 추가 할 주제의 이름을 입력받았을 때, 그 이름을 가진 주제 버튼 만들기
@@ -443,5 +500,100 @@ public class MyFrame extends JFrame{
 		}
 		fw.close();
     }
+	public static void streamingMicRecognize(int lan) throws Exception {
+		
+    	ResponseObserver<StreamingRecognizeResponse> responseObserver = null;
+        try (SpeechClient client = SpeechClient.create()) {
+
+            responseObserver =
+                new ResponseObserver<StreamingRecognizeResponse>() {
+                    ArrayList<StreamingRecognizeResponse> responses = new ArrayList<>();
+
+                    public void onStart(StreamController controller) {}
+
+                    public void onResponse(StreamingRecognizeResponse response) {
+                        responses.add(response);
+                    }
+
+                    public void onComplete() {
+                        for (StreamingRecognizeResponse response : responses) {
+                            StreamingRecognitionResult result = response.getResultsList().get(0);
+                            SpeechRecognitionAlternative alternative = result.getAlternativesList().get(0);
+                            System.out.printf("Transcript : %s\n", alternative.getTranscript());
+                            str=alternative.getTranscript();
+                        }
+                    }
+
+                    public void onError(Throwable t) {
+                        System.out.println(t);
+                    }
+                };
+
+	        ClientStream<StreamingRecognizeRequest> clientStream =
+	                client.streamingRecognizeCallable().splitCall(responseObserver);
+	
+	        
+	        RecognitionConfig recognitionConfig;
+	        if(lan==0) {
+		        recognitionConfig=RecognitionConfig.newBuilder()
+		                        .setEncoding(RecognitionConfig.AudioEncoding.LINEAR16)
+		                        .setLanguageCode("en-US")
+		                        .setSampleRateHertz(16000)
+		                        .build();
+	        }
+	        else {
+		        recognitionConfig=RecognitionConfig.newBuilder()
+		                        .setEncoding(RecognitionConfig.AudioEncoding.LINEAR16)
+		                        .setLanguageCode("ko-KR")
+		                        .setSampleRateHertz(16000)
+		                        .build();
+	        }
+	        StreamingRecognitionConfig streamingRecognitionConfig =
+	                StreamingRecognitionConfig.newBuilder().setConfig(recognitionConfig).build();
+	
+	        StreamingRecognizeRequest request =
+	                StreamingRecognizeRequest.newBuilder()
+	                        .setStreamingConfig(streamingRecognitionConfig)
+	                        .build(); // The first request in a streaming call has to be a config
+	
+	        clientStream.send(request);
+	        // SampleRate:16000Hz, SampleSizeInBits: 16, Number of channels: 1, Signed: true,
+	        // bigEndian: false
+	        AudioFormat audioFormat = new AudioFormat(16000, 16, 1, true, false);
+	        DataLine.Info targetInfo =
+	                new Info(
+	                        TargetDataLine.class,
+	                        audioFormat); // Set the system information to read from the microphone audio stream
+	
+	        if (!AudioSystem.isLineSupported(targetInfo)) {
+	            System.out.println("Microphone not supported");
+	            System.exit(0);
+	        }
+	        // Target data line captures the audio stream the microphone produces.
+	        TargetDataLine targetDataLine = (TargetDataLine) AudioSystem.getLine(targetInfo);
+	        targetDataLine.open(audioFormat);
+	        targetDataLine.start();
+	        System.out.println("Start speaking");
+	        long startTime = System.currentTimeMillis();
+	        // Audio Input Stream
+	        AudioInputStream audio = new AudioInputStream(targetDataLine);
+	        while (true) {
+	            long estimatedTime = System.currentTimeMillis() - startTime;
+	            byte[] data = new byte[6400];
+	            audio.read(data);
+	            if (estimatedTime > 3000) { // 6 seconds
+	                System.out.println("Stop speaking.");
+	                targetDataLine.stop();
+	                targetDataLine.close();
+	                break;
+	            }
+	            request = StreamingRecognizeRequest.newBuilder().setAudioContent(ByteString.copyFrom(data)).build();
+	            clientStream.send(request);
+	        }
+	    } catch (Exception e) {
+	        System.out.println(e);
+	    }
+	    responseObserver.onComplete();
+	}
 	
 }

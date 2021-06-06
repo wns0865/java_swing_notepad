@@ -44,6 +44,7 @@ public class test extends JFrame  {
 	int[] currenttestnum = new int[100];
 	int testcount;
 	int result;
+	int WordMean=-1;
 	List<Integer> array = new ArrayList<>();
 	test() throws IOException, LineUnavailableException, UnsupportedAudioFileException{
 		
@@ -109,7 +110,15 @@ public class test extends JFrame  {
 		
 		// 단어시험 시작버튼
 		wordButton.addActionListener(e->{
-			startButton1.addActionListener(f -> {
+			WordMean=0;
+		});
+		
+		// 뜻시험 시작버튼
+		meanButton.addActionListener(e->{
+			WordMean=1;
+		});
+		startButton1.addActionListener(f -> {
+			if(WordMean==0) {
 				testcount=0;
 				testcnt=0;
 				wordButton.setVisible(false);
@@ -132,16 +141,12 @@ public class test extends JFrame  {
 				Collections.shuffle(array);
 				wordLabel.setText((String) MyFrame.SubjectWord[MyFrame.currentSubject][array.get(0)][2]);
 				try {
-					tts((String) MyFrame.SubjectWord[MyFrame.currentSubject][array.get(0)][1]);
+					tts((String) MyFrame.SubjectWord[MyFrame.currentSubject][array.get(0)][2], 1);
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
-			});
-		});
-		
-		// 뜻시험 시작버튼
-		meanButton.addActionListener(e->{
-			startButton1.addActionListener(f -> {	
+			}
+			if(WordMean==1) {
 				testcount=0;
 				testcnt=0;
 				wordButton.setVisible(false);
@@ -165,16 +170,14 @@ public class test extends JFrame  {
 				wordLabel.setText((String) MyFrame.SubjectWord[MyFrame.currentSubject][array.get(0)][1]);
 
 				try {
-					tts((String) MyFrame.SubjectWord[MyFrame.currentSubject][array.get(0)][1]);
+					tts((String) MyFrame.SubjectWord[MyFrame.currentSubject][array.get(0)][1], 0);
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
-			});
+			}
 		});
-		
-		// 단어시험 제출버튼
-		wordButton.addActionListener(e->{
-			submitButton.addActionListener(f->{
+		submitButton.addActionListener(f->{
+			if(WordMean==0) {
 				if(MyFrame.SubjectWord[MyFrame.currentSubject][array.get(testcount)][1].equals(testField.getText())) {
 					wrongTable.setValueAt(iconO, testcount, 0);
 					wrong[testcount][1]=MyFrame.SubjectWord[MyFrame.currentSubject][array.get(testcount)][1];
@@ -196,17 +199,13 @@ public class test extends JFrame  {
 				else {
 					wordLabel.setText((String) MyFrame.SubjectWord[MyFrame.currentSubject][array.get(testcount)][2]);
 					try {
-						tts((String) MyFrame.SubjectWord[MyFrame.currentSubject][array.get(testcount)][2]);
+						tts((String) MyFrame.SubjectWord[MyFrame.currentSubject][array.get(testcount)][2], 1);
 					} catch (Exception e1) {
 						e1.printStackTrace();
 					}
 				}
-			});
-		});
-		
-		// 뜻시험 제출버튼
-		meanButton.addActionListener(e->{
-			submitButton.addActionListener(f->{
+			}
+			if(WordMean==1) {
 				if(MyFrame.SubjectWord[MyFrame.currentSubject][array.get(testcount)][2].equals(testField.getText())) {
 					wrongTable.setValueAt(iconO, testcount, 0);
 					wrong[testcount][1]=MyFrame.SubjectWord[MyFrame.currentSubject][array.get(testcount)][1];
@@ -230,13 +229,14 @@ public class test extends JFrame  {
 				else {
 					wordLabel.setText((String) MyFrame.SubjectWord[MyFrame.currentSubject][array.get(testcount)][1]);
 					try {
-						tts((String) MyFrame.SubjectWord[MyFrame.currentSubject][array.get(testcount)][1]);
+						tts((String) MyFrame.SubjectWord[MyFrame.currentSubject][array.get(testcount)][1], 0);
 					} catch (Exception e1) {
 						e1.printStackTrace();
 					}
 				}
-			});
+			}
 		});
+
 
 		this.setResizable(false);
 		this.setSize(500,500);
@@ -262,17 +262,23 @@ public class test extends JFrame  {
 			}
 	    });
 	}
-	void tts(String subjectWord)throws Exception {
+	void tts(String subjectWord, int b)throws Exception {
 		try (TextToSpeechClient textToSpeechClient = TextToSpeechClient.create()) {
-			VoiceSelectionParams voice =VoiceSelectionParams.newBuilder().setLanguageCode("en-US")
-					.setSsmlGender(SsmlVoiceGender.NEUTRAL).build();
+			VoiceSelectionParams voice;
+			System.out.println(b);
+			if (b==1) {
+				voice =VoiceSelectionParams.newBuilder().setLanguageCode("ko-KR")
+						.setSsmlGender(SsmlVoiceGender.NEUTRAL).build();
+			}
+			else {
+				voice =VoiceSelectionParams.newBuilder().setLanguageCode("en-US")
+						.setSsmlGender(SsmlVoiceGender.NEUTRAL).build();
+			}
 			SynthesisInput input = SynthesisInput.newBuilder().setText(subjectWord).build();
-			
 			SynthesizeSpeechResponse response =textToSpeechClient.synthesizeSpeech(input, voice, audioConfig);
 			ByteString audioContents = response.getAudioContent();
 			try (OutputStream out = new FileOutputStream("output.wav")) {
 				out.write(audioContents.toByteArray());
-				System.out.println("WOW");
 			}
 		}
 		File file = new File("output.wav");
