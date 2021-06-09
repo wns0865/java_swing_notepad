@@ -37,8 +37,8 @@ public class MyFrame extends JFrame{
 	static int currentSubject;
 	String tempSubjectName;
 	String line;
-	Object[] columnNames = {"Áß¿äµµ","´Ü¾î","¶æ","¼±ÅÃ"};
-	Object[] voice = {"È®ÀÎ","Ãë¼Ò","À½¼ºÀÎ½Ä"};
+	Object[] columnNames = {"ì¤‘ìš”ë„","ë‹¨ì–´","ëœ»","ì„ íƒ"};
+	Object[] voice = {"í™•ì¸","ì·¨ì†Œ","ìŒì„±ì¸ì‹"};
 	JTable[] wordTable = new JTable[6];
 	static int[] wordColor= {0xFFFF66,0xCCFF00,0x50BFE6,0xFD5B78,0xFF6EFF,0xAF6E4D};
 	JScrollPane[] scroll_table = new JScrollPane[6];
@@ -50,23 +50,23 @@ public class MyFrame extends JFrame{
 		ImageIcon icon2 = new ImageIcon("noteIcon.png");
 		ImageIcon iconX = new ImageIcon("x.png");
 		ImageIcon iconNote = new ImageIcon("img.png");
-		ImageIcon iconStar = new ImageIcon("star.jpg");
-		JButton startButton = new JButton("½ÃÀÛ");  	//Ã³À½ start ¹× µÚ·Î °¡´Â ¹öÆ°
-		JButton addSubjectButton = new JButton("+"); 	//ÁÖÁ¦ Ãß°¡ ¹öÆ°
-		JButton testButton = new JButton("½ÃÇè");    	//ÇØ´ç °ú¸ñ¿¡ ÀÖ´Â °Íµé Å×½ºÆ® ¹öÆ°
-		JButton deleteSelectedWords = new JButton("»èÁ¦");	//ÇØ´ç ÁÖÁ¦ »èÁ¦ ¹öÆ°
-		JButton addWord = new JButton("Ãß°¡");         	//ÇØ´ç ÁÖÁ¦ Å×ÀÌºí¿¡ »õ·Î¿î ´Ü¾î Ãß°¡ ¹öÆ°
+		ImageIcon iconStar = new ImageIcon("ic_star.png");
+		JButton startButton = new JButton("ì‹œì‘");  	//ì²˜ìŒ start ë° ë’¤ë¡œ ê°€ëŠ” ë²„íŠ¼
+		JButton addSubjectButton = new JButton("+"); 	//ì£¼ì œ ì¶”ê°€ ë²„íŠ¼
+		JButton testButton = new JButton("ì‹œí—˜");    	//í•´ë‹¹ ê³¼ëª©ì— ìˆëŠ” ê²ƒë“¤ í…ŒìŠ¤íŠ¸ ë²„íŠ¼
+		JButton deleteSelectedWords = new JButton("ì‚­ì œ");	//í•´ë‹¹ ì£¼ì œ ì‚­ì œ ë²„íŠ¼
+		JButton addWord = new JButton("ì¶”ê°€");         	//í•´ë‹¹ ì£¼ì œ í…Œì´ë¸”ì— ìƒˆë¡œìš´ ë‹¨ì–´ ì¶”ê°€ ë²„íŠ¼
 		JCheckBox selectAll = new JCheckBox(); 
 		JCheckBox selectImportant = new JCheckBox(); 
-		JTextField subjectText = new JTextField();      //ÁÖÁ¦ Ãß°¡ÇÒ ¶§ ¾²´Â ÅØ½ºÆ®ÇÊµå
+		JTextField subjectText = new JTextField();      //ì£¼ì œ ì¶”ê°€í•  ë•Œ ì“°ëŠ” í…ìŠ¤íŠ¸í•„ë“œ
 		JPanel selectBox= new JPanel();
 		JPanel selectBox1= new JPanel();
 		JLabel selectYN=new JLabel();
 		JLabel selectYN1=new JLabel();
-		//SubjectWord¶ó´Â °¢ ÁÖÁ¦ º° ´Ü¾î ÀúÀå¿ë ¹è¿­ »ı¼º
+		//SubjectWordë¼ëŠ” ê° ì£¼ì œ ë³„ ë‹¨ì–´ ì €ì¥ìš© ë°°ì—´ ìƒì„±
 		for(int i=0;i<6;i++) 
 			SubjectWord[i]=new Object[100][4];
-		//Subjects¶ó´Â °¢ ÁÖÁ¦ º° ¸ŞÀÎ È­¸é¿¡¼­ Å¬¸¯ÇÒ ¹öÆ° »ı¼º
+		//Subjectsë¼ëŠ” ê° ì£¼ì œ ë³„ ë©”ì¸ í™”ë©´ì—ì„œ í´ë¦­í•  ë²„íŠ¼ ìƒì„±
 		for(int i=0;i<6;i++) {
 			Subjects[i] = new JButton();
 			Subjects[i].setVisible(false);
@@ -81,7 +81,7 @@ public class MyFrame extends JFrame{
 			deleteSubjects[i].setBounds(250+330*((i)%2),100+(i)/2*150,30,30);
 			this.add(deleteSubjects[i]);
 		}
-		//Subjects ´­·¶À» ¶§ º¸¿©Áö´Â ½ºÅ©·Ñ °¡´ÉÇÑ Å×ÀÌºí »ı¼º
+		//Subjects ëˆŒë €ì„ ë•Œ ë³´ì—¬ì§€ëŠ” ìŠ¤í¬ë¡¤ ê°€ëŠ¥í•œ í…Œì´ë¸” ìƒì„±
 		for(int i=0;i<6;i++) {
 			wordTable[i] = new JTable(SubjectWord[i],columnNames) {
 				@Override
@@ -124,16 +124,20 @@ public class MyFrame extends JFrame{
 			    }
 			});
 			wordTable[i].setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
-			wordTable[i].setFont(new Font("µ¸¿òÃ¼", Font.BOLD, 20));
+			wordTable[i].setFont(new Font("ë‹ì›€ì²´", Font.BOLD, 15));
 			wordTable[i].setBackground(new Color(wordColor[0]));
-			wordTable[i].setRowHeight(20);
+			wordTable[i].setRowHeight(40);
 			scroll_table[i] = new JScrollPane(wordTable[i]);
 		    scroll_table[i].setVisible(false);
 		    scroll_table[i].setBounds(100,100,400,400);
+		    wordTable[i].getColumnModel().getColumn(0).setPreferredWidth(50);
+		    wordTable[i].getColumnModel().getColumn(1).setPreferredWidth(150);
+		    wordTable[i].getColumnModel().getColumn(2).setPreferredWidth(150);
+		    wordTable[i].getColumnModel().getColumn(3).setPreferredWidth(50);
 	        this.add(scroll_table[i]);
 		}
 		
-		//¹öÆÛ ¸®´õ·Î ±âÁ¸¿¡ ÀÖ´Â °ª ºÒ·¯¿Í¼­ ¹è¿­¿¡ ³Ö¾îÁÖ±â
+		//ë²„í¼ ë¦¬ë”ë¡œ ê¸°ì¡´ì— ìˆëŠ” ê°’ ë¶ˆëŸ¬ì™€ì„œ ë°°ì—´ì— ë„£ì–´ì£¼ê¸°
 		int wordcnt=0;
 		int subjectcnt=0;
 		line = br.readLine();
@@ -148,8 +152,8 @@ public class MyFrame extends JFrame{
 		 	for(int i=0;i<count;i++) {
 	            line = br.readLine();
 	            String[] wordline = line.split(" ");
-	            if(wordline[0].equals("star.jpg")) {
-	            	SubjectWord[subjectcnt][i][0]="star.jpg";
+	            if(wordline[0].equals("ic_star.png")) {
+	            	SubjectWord[subjectcnt][i][0]="ic_star.png";
 	            	wordTable[subjectcnt].setValueAt(iconStar, i, 0);
 	            }
 	            else SubjectWord[subjectcnt][i][0]=Boolean.FALSE;
@@ -206,7 +210,7 @@ public class MyFrame extends JFrame{
 		startButton.setFont(new Font("Comic Sans", Font.BOLD, 30));
 		startButton.setBackground(new Color(0x14A989));
 		
-		// Å×½ºÆ® ¹öÆ°
+		// í…ŒìŠ¤íŠ¸ ë²„íŠ¼
 		testButton.addActionListener(e -> {
 			for(int i=0;i<SubjectWordCnt[currentSubject];i++) {
 				if((Boolean)SubjectWord[currentSubject][i][3]==true) {
@@ -226,13 +230,13 @@ public class MyFrame extends JFrame{
 					break;
 				}
 				else if(i==SubjectWordCnt[currentSubject]-1) {
-					JOptionPane.showMessageDialog(this,"Å×½ºÆ®¸¦ ÇÒ ´Ü¾î¸¦ ¼±ÅÃÇØÁÖ¼¼¿ä."); 
+					JOptionPane.showMessageDialog(this,"í…ŒìŠ¤íŠ¸ë¥¼ í•  ë‹¨ì–´ë¥¼ ì„ íƒí•´ì£¼ì„¸ìš”."); 
 				}
 			}
 			
 		});
 		
-		//»õ·Î¿î ÁÖÁ¦ Ãß°¡ÇÏ±â ¹öÆ°
+		//ìƒˆë¡œìš´ ì£¼ì œ ì¶”ê°€í•˜ê¸° ë²„íŠ¼
 		addSubjectButton.addActionListener(e -> {
 			addSubjectButton.setVisible(false);
 			for(int i=0;i<cntSubject;i++) {
@@ -243,14 +247,14 @@ public class MyFrame extends JFrame{
 				Subjects[cntSubject].setVisible(false);
 				subjectText.setBounds(50+330*((cntSubject)%2),100+(cntSubject)/2*150,200,100);
 				subjectText.setVisible(true);
-				if(cntSubject==6) //5°³°¡ ´Ù Â÷¸é ´õ ÀÌ»ó Ãß°¡ ¸øÇÏ°Ô ¸·À½
+				if(cntSubject==6) //5ê°œê°€ ë‹¤ ì°¨ë©´ ë” ì´ìƒ ì¶”ê°€ ëª»í•˜ê²Œ ë§‰ìŒ
 					addSubjectButton.setVisible(false);
 			}
 		});
 		
 		for(int i=0;i<6;i++) {
 			int k=i;
-			Subjects[i].addActionListener(e -> { //°¢ ÁÖÁ¦ÀÎ Subjects[i]°¡ ´­·ÈÀ» ¶§ 
+			Subjects[i].addActionListener(e -> { //ê° ì£¼ì œì¸ Subjects[i]ê°€ ëˆŒë ¸ì„ ë•Œ 
 				currentSubject=k;
 				
 				startButton.setVisible(true);
@@ -266,9 +270,9 @@ public class MyFrame extends JFrame{
 				selectBox.setVisible(true);
 				selectBox1.setVisible(true);
 			});
-			deleteSubjects[i].addActionListener(e -> { //¿·¿¡ ÀÖ´Â Á¶±×¸¶ÇÑ ²ÅÇ¥·Î ÇØ´ç ÁÖÁ¦¸¦ ´Ù Áö¿ï ¶§
+			deleteSubjects[i].addActionListener(e -> { //ì˜†ì— ìˆëŠ” ì¡°ê·¸ë§ˆí•œ ê¼½í‘œë¡œ í•´ë‹¹ ì£¼ì œë¥¼ ë‹¤ ì§€ìš¸ ë•Œ
 				currentSubject=k;
-				int a=JOptionPane.showConfirmDialog(this,"ÇØ´ç ÁÖÁ¦ ¹× ÁÖÁ¦ ¾È¿¡ ÀÖ´Â ´Ü¾î¸¦ ¸ğµÎ Áö¿ì½Ã°Ú½À´Ï±î?"); 
+				int a=JOptionPane.showConfirmDialog(this,"í•´ë‹¹ ì£¼ì œ ë° ì£¼ì œ ì•ˆì— ìˆëŠ” ë‹¨ì–´ë¥¼ ëª¨ë‘ ì§€ìš°ì‹œê² ìŠµë‹ˆê¹Œ?"); 
 				if(a==JOptionPane.YES_OPTION){  
 					for(int l=currentSubject;l<5;l++) {
 						Subjects[l].setText(Subjects[l+1].getText());
@@ -286,7 +290,7 @@ public class MyFrame extends JFrame{
 			});
 			
 		}
-		//´Ü¾î ÀüÃ¼ ¼±ÅÃ Ã¼Å©¹Ú½º
+		//ë‹¨ì–´ ì „ì²´ ì„ íƒ ì²´í¬ë°•ìŠ¤
 		selectAll.addActionListener(e -> {
 			for(int i=0;i<SubjectWordCnt[currentSubject];i++) {
 				if(selectAll.isSelected())
@@ -298,7 +302,7 @@ public class MyFrame extends JFrame{
 			scroll_table[currentSubject].setVisible(true);
 			
 		});
-		//Áß¿äµµ ´Ü¾î ÀüÃ¼ ¼±ÅÃ Ã¼Å©¹Ú½º
+		//ì¤‘ìš”ë„ ë‹¨ì–´ ì „ì²´ ì„ íƒ ì²´í¬ë°•ìŠ¤
 		selectImportant.addActionListener(e -> {
 			for(int i=0;i<SubjectWordCnt[currentSubject];i++) {
 				if(selectImportant.isSelected()) {
@@ -314,7 +318,7 @@ public class MyFrame extends JFrame{
 			scroll_table[currentSubject].setVisible(true);
 			
 		});
-		//Ã¼Å©µÈ ´Ü¾î »èÁ¦ÇÏ±â
+		//ì²´í¬ëœ ë‹¨ì–´ ì‚­ì œí•˜ê¸°
 		deleteSelectedWords.addActionListener(e -> {
 			int cnt=0;
 			int tmp = SubjectWordCnt[currentSubject];
@@ -330,13 +334,13 @@ public class MyFrame extends JFrame{
 				cnt++;
 			}
 			if (cnt==SubjectWordCnt[currentSubject]) {
-				JOptionPane.showMessageDialog(this,"»èÁ¦ÇÒ ´Ü¾î¸¦ ¼±ÅÃÇØÁÖ¼¼¿ä."); 
+				JOptionPane.showMessageDialog(this,"ì‚­ì œí•  ë‹¨ì–´ë¥¼ ì„ íƒí•´ì£¼ì„¸ìš”."); 
 			}
 			scroll_table[currentSubject].setVisible(false);
 			scroll_table[currentSubject].setVisible(true);
 		});
 		
-		//¸ŞÀÎÈ­¸éÀ¸·Î °¡±â
+		//ë©”ì¸í™”ë©´ìœ¼ë¡œ ê°€ê¸°
 		startButton.addActionListener(e -> {
 			startButton.setBounds(510,20,70,50);
 			startButton.setText("<-");
@@ -357,24 +361,24 @@ public class MyFrame extends JFrame{
 		});
 		
 		
-		// ´Ü¾î Ãß°¡ ¹öÆ° ¸¸µé±â
+		// ë‹¨ì–´ ì¶”ê°€ ë²„íŠ¼ ë§Œë“¤ê¸°
 		addWord.addActionListener(e -> {
 			JTextField WordField = new JTextField(10);
 			JTextField MeanField = new JTextField(10);
 
 			JPanel myPanel = new JPanel();
-			myPanel.add(new JLabel("´Ü¾î:"));
+			myPanel.add(new JLabel("ë‹¨ì–´:"));
 			myPanel.add(WordField);
 			myPanel.add(Box.createHorizontalStrut(20));
-			myPanel.add(new JLabel("¶æ:"));
+			myPanel.add(new JLabel("ëœ»:"));
 			myPanel.add(MeanField);
-			int result = JOptionPane.showOptionDialog(null, myPanel, "ÀÔ·ÂÇÒ ´Ü¾î¿Í ¶æ ÀÔ·Â", JOptionPane.OK_CANCEL_OPTION,JOptionPane.PLAIN_MESSAGE, iconStar, voice, null);
+			int result = JOptionPane.showOptionDialog(null, myPanel, "ì…ë ¥í•  ë‹¨ì–´ì™€ ëœ» ì…ë ¥", JOptionPane.OK_CANCEL_OPTION,JOptionPane.PLAIN_MESSAGE, iconStar, voice, null);
   
 			if (result == JOptionPane.OK_OPTION) {
 				String Word = WordField.getText();
 				String Mean = MeanField.getText();
 				if(Word.equals("") || Mean.equals(""))
-					JOptionPane.showMessageDialog(this,"Á¦´ë·Î ÀÔ·ÂÇØ ÁÖ¼¼¿ä."); 
+					JOptionPane.showMessageDialog(this,"ì œëŒ€ë¡œ ì…ë ¥í•´ ì£¼ì„¸ìš”."); 
 				else {
 					SubjectWord[currentSubject][SubjectWordCnt[currentSubject]][0]=Boolean.FALSE;
 					SubjectWord[currentSubject][SubjectWordCnt[currentSubject]][1]=Word;
@@ -384,17 +388,17 @@ public class MyFrame extends JFrame{
 					scroll_table[currentSubject].setVisible(true);
 				}
 			}
-		  	if (result == 2) { // À½¼ºÀÎ½ÄÀÌ °ñ¶óÁ³À» ¶§
+		  	if (result == 2) { // ìŒì„±ì¸ì‹ì´ ê³¨ë¼ì¡Œì„ ë•Œ
 		  		SubjectWord[currentSubject][SubjectWordCnt[currentSubject]][0]=Boolean.FALSE;
 		  		str=null;
 		  		String tmp1=null;
 		  		String tmp2=null;
 		  		int tmp3=-1;
-		  		JOptionPane.showMessageDialog(myPanel, "OK¸¦ ´­·¯ ´Ü¾î À½¼ºÀÎ½Ä ½ÃÀÛ", null, 1);
+		  		JOptionPane.showMessageDialog(myPanel, "OKë¥¼ ëˆŒëŸ¬ ë‹¨ì–´ ìŒì„±ì¸ì‹ ì‹œì‘", null, 1);
 				try {
 					while(str==null) {
 						streamingMicRecognize(0);
-						if(str==null) tmp3= JOptionPane.showConfirmDialog(this, "Á¦´ë·Î ÀÎ½ÄÀÌ ¾ÈµÆ½À´Ï´Ù. ´Ù½Ã ÇÏ½Ã°Ú½À´Ï±î?"); 
+						if(str==null) tmp3= JOptionPane.showConfirmDialog(this, "ì œëŒ€ë¡œ ì¸ì‹ì´ ì•ˆëìŠµë‹ˆë‹¤. ë‹¤ì‹œ í•˜ì‹œê² ìŠµë‹ˆê¹Œ?"); 
 						else tmp3=0;
 						if(tmp3!=0) return;
 					}
@@ -403,11 +407,11 @@ public class MyFrame extends JFrame{
 				    e1.printStackTrace();
 				}
 				str=null;
-				JOptionPane.showMessageDialog(myPanel, "OK¸¦ ´­·¯ ¶æ(ÇÑ±¹¾î) À½¼ºÀÎ½Ä ½ÃÀÛ", null, 1);
+				JOptionPane.showMessageDialog(myPanel, "OKë¥¼ ëˆŒëŸ¬ ëœ»(í•œêµ­ì–´) ìŒì„±ì¸ì‹ ì‹œì‘", null, 1);
 				try {
 					while(str==null) {
 						streamingMicRecognize(1);
-						if(str==null) tmp3= JOptionPane.showConfirmDialog(this, "Á¦´ë·Î ÀÎ½ÄÀÌ ¾ÈµÆ½À´Ï´Ù. ´Ù½Ã ÇÏ½Ã°Ú½À´Ï±î?"); 
+						if(str==null) tmp3= JOptionPane.showConfirmDialog(this, "ì œëŒ€ë¡œ ì¸ì‹ì´ ì•ˆëìŠµë‹ˆë‹¤. ë‹¤ì‹œ í•˜ì‹œê² ìŠµë‹ˆê¹Œ?"); 
 						else tmp3=0;
 						if(tmp3!=0) return;
 					}
@@ -424,7 +428,7 @@ public class MyFrame extends JFrame{
 			}
 		});
 		
-        //TextField¿¡ Ãß°¡ ÇÒ ÁÖÁ¦ÀÇ ÀÌ¸§À» ÀÔ·Â¹Ş¾ÒÀ» ¶§, ±× ÀÌ¸§À» °¡Áø ÁÖÁ¦ ¹öÆ° ¸¸µé±â
+        //TextFieldì— ì¶”ê°€ í•  ì£¼ì œì˜ ì´ë¦„ì„ ì…ë ¥ë°›ì•˜ì„ ë•Œ, ê·¸ ì´ë¦„ì„ ê°€ì§„ ì£¼ì œ ë²„íŠ¼ ë§Œë“¤ê¸°
 		subjectText.addActionListener(new ActionListener() {
 		    @Override
 		    public void actionPerformed(ActionEvent e) {
@@ -473,7 +477,7 @@ public class MyFrame extends JFrame{
         this.add(selectBox1);
         
         br.close();
-        // Ã¢ ´İÀ» ¶§ ¹è¿­ ¾È¿¡ ÀÖ´Â °ªµéÀ» text ÆÄÀÏ¿¡ ÀúÀå
+        // ì°½ ë‹«ì„ ë•Œ ë°°ì—´ ì•ˆì— ìˆëŠ” ê°’ë“¤ì„ text íŒŒì¼ì— ì €ì¥
         this.addWindowListener(new java.awt.event.WindowAdapter() {
 	        @Override
 			public void windowClosing(java.awt.event.WindowEvent windowEvent){
